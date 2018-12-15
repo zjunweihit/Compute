@@ -35,6 +35,12 @@
  * float eventMs = 1.0f;
  * hipEventElapsedTime(&eventMs, start, stop);
  *
+ * Profile HIP API
+ * $ HIP_TRACE_API=1 HIP_DB=0x2 ./Event
+ * NOTE:
+ *   1) need to install rocm-profiler, cxlactivitylogger ??
+ *   2) /opt/rocm/bin/rocm-profiler -A -o MT.atp -e HIP_PROFILE_API=1 ./Event ??
+ *   3) /opt/rocm/hip/bin/hipdemangleatp MT.atp ??
  */
 // it must be void
 __global__ void matrixAdd(hipLaunchParm lp, float *out, float *in, unsigned int width)
