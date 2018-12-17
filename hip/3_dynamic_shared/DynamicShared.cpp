@@ -57,29 +57,16 @@ void matrixAddByCPU(float *out, float *in, unsigned int width)
         out[i] = in[i] + 10;
 }
 
-static void printTime(const char *str, float time)
-{
-    std::cout << std::setprecision(3) << std::setiosflags(std::ios::fixed)
-              << std::setfill('0') << std::setw(6)
-              << str << " = " << time << "ms\n";
-}
-
 int main()
 {
     float *A_h, *A_d, *A_r;
     float *B_h, *B_d;
     int i;
 
-    hipEvent_t start, stop;
-    float eventMs = 1.0f;
-
     hipDeviceProp_t devProp;
     hipGetDeviceProperties(&devProp, 0);
 
     std::cout << "Device name: " << devProp.name << std::endl;
-
-    hipEventCreate(&start);
-    hipEventCreate(&stop);
 
     A_h = (float*)malloc(NUM * sizeof(float));
     B_h = (float*)malloc(NUM * sizeof(float));
@@ -92,14 +79,8 @@ int main()
     hipMalloc((void**)&A_d, NUM * sizeof(float));
     hipMalloc((void**)&B_d, NUM * sizeof(float));
 
-    hipEventRecord(start, NULL); // 2.1
     hipMemcpy(A_d, (const void*)A_h, NUM * sizeof(float), hipMemcpyHostToDevice);
-    hipEventRecord(stop, NULL); // 2.2
-    hipEventSynchronize(stop); // 3
-    hipEventElapsedTime(&eventMs, start, stop); // 4
-    printTime("hipMemcpyHostToDevice time", eventMs);
 
-    hipEventRecord(start, NULL); // 2.1
     hipLaunchKernel(matrixAdd,
                     dim3(WIDTH / THREAD_PER_BLOCK_X, WIDTH / THREAD_PER_BLOCK_Y),
                     dim3(THREAD_PER_BLOCK_X, THREAD_PER_BLOCK_Y),
@@ -108,17 +89,8 @@ int main()
                     B_d,
                     A_d,
                     WIDTH);
-    hipEventRecord(stop, NULL); // 2.2
-    hipEventSynchronize(stop); // 3
-    hipEventElapsedTime(&eventMs, start, stop); // 4
-    printTime("hipLaunchKernel time", eventMs);
 
-    hipEventRecord(start, NULL); // 2.1
     hipMemcpy(B_h, (const void*)B_d, NUM * sizeof(float), hipMemcpyDeviceToHost);
-    hipEventRecord(stop, NULL); // 2.1
-    hipEventSynchronize(stop); // 3
-    hipEventElapsedTime(&eventMs, start, stop); // 4
-    printTime("hipMemcpyDeviceToHost time", eventMs);
 
     // verify the results
     int errors = 0;
