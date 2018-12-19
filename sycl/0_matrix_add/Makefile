@@ -1,4 +1,5 @@
 TARGET=MatrixAdd
+TARGET_OCL=VectorAddOpenCL
 
 CC=clang
 CCFLAGS= -g -Wall -Wno-ignored-attributes -std=c++17
@@ -10,11 +11,14 @@ ifeq ($(DEBUG), 1)
 CCFLAGS += -D_DEBUG
 endif
 
+all: $(TARGET) $(TARGET_OCL)
+
 $(TARGET): $(TARGET).cpp
 	$(CC) $(INCLUDE) $(DEFINITION) $(CCFLAGS) $< -o $@ $(LDFLAGS)
 
+$(TARGET_OCL): $(TARGET_OCL).cpp
+	$(CC) $(INCLUDE) $(DEFINITION) $(CCFLAGS) $< -o $@ $(LDFLAGS)
+
 clean:
-	@rm -f *.o $(TARGET)
-run:
-	./$(TARGET)
+	@rm -f *.o $(TARGET) $(TARGET_OCL)
 
