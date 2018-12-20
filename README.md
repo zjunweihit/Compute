@@ -10,3 +10,5 @@ Ubuntu18.04: install the required packages
 ```Shell
 sudo apt install clang g++ libboost-dev libboost-log-dev cmake
 ```
+triSYCL API: 
+* [triSYCL](http://trisycl.github.io/triSYCL/Doxygen/triSYCL/html/)
