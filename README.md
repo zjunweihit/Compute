@@ -1,5 +1,6 @@
 # Compute
-Introduce some common compute stacks
+Introduce some common compute stacks.  
+Verified in Ubuntu 18.04
 
 ## ROCm
 
@@ -21,6 +22,10 @@ sudo usermod -a -G video $LOGNAME
 ```
 /opt/rocm/bin/rocminfo
 /opt/rocm/opencl/bin/x86_64/clinfo
+```
+* More ROCm libs, if any
+```
+sudo apt install rocm-libs miopen-hip cxlactivitylogger
 ```
 * Remove the ROCm
 ```
