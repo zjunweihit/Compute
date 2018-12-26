@@ -33,7 +33,7 @@ sudo apt autoremove rocm-dkms
 ```
 
 Reference:
-* [ROCm Installation Guide](https://rocm-documentation.readthedocs.io/en/latest/Installation_Guide/Installation-Guide.html#installing-from-amd-rocm-repositories)
+* [ROCm Installation Guide](https://zjunweihit.github.io/2018/12/25/compute-env-rocm-md/)
 
 ## SYCL
 Glone triSYCL to the same fold as Compute.git location
