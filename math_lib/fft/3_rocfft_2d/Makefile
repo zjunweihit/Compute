@@ -16,7 +16,13 @@ CC_FLAGS=-std=c++11 -D__HIP_PLATFORM_HCC__
 CC_INC=-I/opt/rocm/include
 CC_LIBS=-L/opt/rocm/lib -lhip_hcc -lrocfft -lfftw3f
 
-all: $(TARGET_CC) $(TARGET_C) $(TARGET_FFTW_CC)
+# gcc has no HCC backend
+TARGET_FFTW_C=2d_fftw_c
+SRC_FFTW_C=rocfft_2d_fftw.c
+
+TARGETS=$(TARGET_CC) $(TARGET_C) $(TARGET_FFTW_CC) $(TARGET_FFTW_C)
+
+all: $(TARGETS)
 
 $(TARGET_CC): $(SRC_CC)
 	$(HIPCC) $(HIPCC_FLAGS) $< -o $@
@@ -27,8 +33,11 @@ $(TARGET_C): $(SRC_C)
 $(TARGET_FFTW_CC): $(SRC_FFTW_CC)
 	$(CC) $(CC_FLAGS) $(CC_INC) $< -o $@ $(CC_LIBS)
 
+$(TARGET_FFTW_C): $(SRC_FFTW_C)
+	$(CC) $(CC_FLAGS) $(CC_INC) $< -o $@ $(CC_LIBS)
+
 clean:
-	rm -f *.o $(TARGET_C) $(TARGET_CC) $(TARGET_FFTW_CC)
+	rm -f *.o $(TARGETS)
 run-c:
 	./$(TARGET_C)
 run-cpp:
