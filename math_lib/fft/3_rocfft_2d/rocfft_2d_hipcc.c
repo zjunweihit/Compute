@@ -21,7 +21,7 @@ int main()
     printf("hipFFT version: %d\n", ver);
 
     for (size_t i = 0; i < TOTAL; i++) {
-        inComplexHost[i].x = i;
+        inComplexHost[i].x = i + (i % 3) - (i % 7);
         inComplexHost[i].y = 0;
     }
 

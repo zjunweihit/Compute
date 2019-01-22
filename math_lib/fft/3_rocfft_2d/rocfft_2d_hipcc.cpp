@@ -17,7 +17,7 @@ int main()
     std::vector<float2> inComplexHost(Total);
 
     for (size_t i = 0; i < Total; i++) {
-        inComplexHost[i].x = i;
+        inComplexHost[i].x = i + (i % 3) - (i % 7);
         inComplexHost[i].y = 0;
     }
 
