@@ -50,7 +50,7 @@ int main()
         for (size_t j = 0; j < M; j++) {
             for (size_t k = 0; k < L; k++) {
             std::cout << outComplexHost[i*M*L + j*L + k].x << ", " <<
-                         outComplexHost[i*M*L + j*L + k].y << "\n ";
+                         outComplexHost[i*M*L + j*L + k].y << "i\n ";
             }
         }
         std::cout << "\n";

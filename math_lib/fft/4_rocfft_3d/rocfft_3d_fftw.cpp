@@ -21,7 +21,7 @@ int main()
 
     for (size_t i = 0; i < Total; i++) {
         inComplexHost[i].x = i + (i % 3) - (i % 7);
-        inComplexHost[i].y = i + (i % 5) - (i % 2);
+        inComplexHost[i].y = 0;//i + (i % 5) - (i % 2);
     }
 
     const size_t SizeOfByte = Total * sizeof(float2);
@@ -63,14 +63,14 @@ int main()
     std::vector<float2> outComplexHost(Total);
     hipMemcpy(&outComplexHost[0], inComplexDev, SizeOfByte, hipMemcpyDeviceToHost);
 
-#ifdef DEBUG_OUTPUT
+#ifdef _DEBUG_OUTPUT
     std::cout << "Output:\n";
     for (size_t i = 0; i < N; i++) {
         std::cout << "Page " << i << ":\n";
         for (size_t j = 0; j < M; j++) {
             for (size_t k = 0; k < L; k++) {
             std::cout << outComplexHost[i*M*L + j*L + k].x << ", " <<
-                         outComplexHost[i*M*L + j*L + k].y << "\n";
+                         outComplexHost[i*M*L + j*L + k].y << "i\n";
             }
         }
         std::cout << "\n";
