@@ -15,15 +15,14 @@ int main()
     const size_t M = 4;
     const size_t L = 4;
     const size_t Total = N * M * L;
-    std::vector<float3> inComplexHost(Total);
+    std::vector<float2> inComplexHost(Total);
 
     for (size_t i = 0; i < Total; i++) {
         inComplexHost[i].x = i + (i % 3) - (i % 7);
         inComplexHost[i].y = i + (i % 5) - (i % 2);
-        inComplexHost[i].z = i + (i % 2) - (i % 3);
     }
 
-    const size_t SizeOfByte = Total * sizeof(float3);
+    const size_t SizeOfByte = Total * sizeof(float2);
 
     // Allocate memory in device
     hipfftComplex *inComplexDev;
@@ -42,7 +41,7 @@ int main()
     hipDeviceSynchronize();
 
     // Copy the result back to the host
-    std::vector<float3> outComplexHost(Total);
+    std::vector<float2> outComplexHost(Total);
     hipMemcpy(&outComplexHost[0], inComplexDev, SizeOfByte, hipMemcpyDeviceToHost);
 
     std::cout << "Output:\n";
@@ -51,8 +50,7 @@ int main()
         for (size_t j = 0; j < M; j++) {
             for (size_t k = 0; k < L; k++) {
             std::cout << outComplexHost[i*M*L + j*L + k].x << ", " <<
-                         outComplexHost[i*M*L + j*L + k].y << ", " <<
-                         outComplexHost[i*M*L + j*L + k].z << "\n";
+                         outComplexHost[i*M*L + j*L + k].y << "\n ";
             }
         }
         std::cout << "\n";
