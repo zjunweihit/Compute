@@ -42,7 +42,6 @@ int main()
 
     // Compute in GPU
     // ========================================================================
-
     // Allocate memory in device
     hipfftComplex *inComplexDev;
     hipMalloc((void**)&inComplexDev, SizeOfByte);
@@ -64,6 +63,7 @@ int main()
     hipMemcpy(&outComplexHost[0], inComplexDev, SizeOfByte, hipMemcpyDeviceToHost);
 
     // Calculate error
+    // ========================================================================
     float err_max = 0;
     std::cout << "Error of each element:\n";
     for (size_t i = 0; i < Total; i++) {
