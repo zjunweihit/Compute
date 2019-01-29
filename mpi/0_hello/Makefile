@@ -1,10 +1,10 @@
 TARGET=hello
 
-CC=mpicc
-C_FLAGS= -g
+MPICC=mpicc
+MPICC_FLAGS=-g
 
 $(TARGET): $(TARGET).c
-	$(CC) $(CC_FLAGS) $< -o $@
+	$(MPICC) $(MPICC_FLAGS) $< -o $@
 
 clean:
 	@rm -f *.o $(TARGET)
