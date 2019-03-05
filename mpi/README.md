@@ -7,13 +7,14 @@ sudo apt install mpich mpich-doc
 
 # Install Open MPI
 
-No `mpicc` in Open MPI packages.
 
 * Ubuntu 18.04
 
 ```
-sudo apt install openmpi-bin openmpi-common openmpi-doc
+sudo apt install openmpi-bin openmpi-common openmpi-doc libopenmpi-dev
 ```
+
+> libopenmpi-dev is required for mpicc.openmp
 
 # Note
 
