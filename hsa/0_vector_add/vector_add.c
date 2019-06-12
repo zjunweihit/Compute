@@ -200,6 +200,7 @@ int main(int argc, char **argv)
 	int fd = open("vector_add.co", O_RDONLY);
 	hsa_code_object_reader_t reader;
 	status = hsa_code_object_reader_create_from_file(fd, &reader);
+	close(fd);
 	check(Read code object from file, status);
 
 	// Load code object
