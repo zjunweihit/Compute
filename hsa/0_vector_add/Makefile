@@ -1,3 +1,4 @@
+# Install clang-7 and lld-7
 CLANG=clang-7
 
 TARGET=vector_add
