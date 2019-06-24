@@ -34,7 +34,7 @@ static hsa_status_t get_all_agent_cb(hsa_agent_t agent, void *data)
 #endif
 
 	struct agent_array_t *p = (struct agent_array_t*)data;
-	printf("found agent 0x%lx, num %d\n", agent.handle, p->num);
+	printf("found agent 0x%lx, index %d\n", agent.handle, p->num);
 
 	p->agents[p->num++] = agent;
 
