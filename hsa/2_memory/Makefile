@@ -2,8 +2,9 @@ TARGET1=get_mem_info
 TARGET2=alloc_mem
 TARGET3=copy_mem
 TARGET4=async_copy_mem
+TARGET5=share_mem_ipc
 
-TARGET=$(TARGET1) $(TARGET2) $(TARGET3) $(TARGET4)
+TARGET=$(TARGET1) $(TARGET2) $(TARGET3) $(TARGET4) $(TARGET5)
 
 C_FLAGS=-g
 HSA_LIB_PATH=/opt/rocm/lib
@@ -13,6 +14,7 @@ SRC1=$(TARGET1).c ../global/global.c
 SRC2=$(TARGET2).c ../global/global.c
 SRC3=$(TARGET3).c ../global/global.c
 SRC4=$(TARGET4).c ../global/global.c
+SRC5=$(TARGET5).c ../global/global.c
 
 all: $(TARGET)
 
@@ -27,6 +29,9 @@ $(TARGET3): $(SRC3)
 
 $(TARGET4): $(SRC4)
 	gcc $(C_FLAGS) $(SRC4) -o $@ -I$(HSA_INC_PATH) -I$(G_INC_PATH) -L$(HSA_LIB_PATH) -lhsa-runtime64
+
+$(TARGET5): $(SRC5)
+	gcc $(C_FLAGS) $(SRC5) -o $@ -I$(HSA_INC_PATH) -I$(G_INC_PATH) -L$(HSA_LIB_PATH) -lhsa-runtime64
 
 clean:
 	rm -f $(TARGET) *.o
