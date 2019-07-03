@@ -1,46 +1,23 @@
-TARGET1=get_mem_info
-TARGET2=alloc_mem
-TARGET3=copy_mem
-TARGET4=async_copy_mem
-TARGET5=share_mem_ipc
-TARGET6=share_mem_mpi
+SRC=$(wildcard *.c)
+TARGETS=$(patsubst %.c, %, $(SRC))
 
-TARGET=$(TARGET1) $(TARGET2) $(TARGET3) $(TARGET4) $(TARGET5) $(TARGET6)
+MPI_SRC=mpi/share_mem_mpi.c
+MPI_TARGETS=$(patsubst %.c, %, $(notdir $(MPI_SRC)))
 
-C_FLAGS=-g
+C_FLAGS=-g -Wall
 HSA_LIB_PATH=/opt/rocm/lib
 HSA_INC_PATH=/opt/rocm/hsa/include/hsa
 G_INC_PATH=../global
-SRC1=$(TARGET1).c ../global/global.c
-SRC2=$(TARGET2).c ../global/global.c
-SRC3=$(TARGET3).c ../global/global.c
-SRC4=$(TARGET4).c ../global/global.c
-SRC5=$(TARGET5).c ../global/global.c
-SRC6=$(TARGET6).c ../global/global.c
+G_SRC=../global/global.c
 
-all: $(TARGET)
+all: $(TARGETS) $(MPI_TARGETS)
 
-$(TARGET1): $(SRC1)
-	gcc $(C_FLAGS) $(SRC1) -o $@ -I$(HSA_INC_PATH) -I$(G_INC_PATH) -L$(HSA_LIB_PATH) -lhsa-runtime64
+$(TARGETS):%:%.c
+	gcc $(C_FLAGS) $< $(G_SRC) -o $@ -I$(HSA_INC_PATH) -I$(G_INC_PATH) -L$(HSA_LIB_PATH) -lhsa-runtime64
 
-$(TARGET2): $(SRC2)
-	gcc $(C_FLAGS) $(SRC2) -o $@ -I$(HSA_INC_PATH) -I$(G_INC_PATH) -L$(HSA_LIB_PATH) -lhsa-runtime64
-
-$(TARGET3): $(SRC3)
-	gcc $(C_FLAGS) $(SRC3) -o $@ -I$(HSA_INC_PATH) -I$(G_INC_PATH) -L$(HSA_LIB_PATH) -lhsa-runtime64
-
-$(TARGET4): $(SRC4)
-	gcc $(C_FLAGS) $(SRC4) -o $@ -I$(HSA_INC_PATH) -I$(G_INC_PATH) -L$(HSA_LIB_PATH) -lhsa-runtime64
-
-$(TARGET5): $(SRC5)
-	gcc $(C_FLAGS) $(SRC5) -o $@ -I$(HSA_INC_PATH) -I$(G_INC_PATH) -L$(HSA_LIB_PATH) -lhsa-runtime64
-
-$(TARGET6): $(SRC6)
-	mpicc $(C_FLAGS) $(SRC6) -o $@ -I$(HSA_INC_PATH) -I$(G_INC_PATH) -L$(HSA_LIB_PATH) -lhsa-runtime64
+$(MPI_TARGETS):$(MPI_SRC)
+	mpicc $(C_FLAGS) $< $(G_SRC) -o $@ -I$(HSA_INC_PATH) -I$(G_INC_PATH) -L$(HSA_LIB_PATH) -lhsa-runtime64
 
 clean:
-	rm -f $(TARGET) *.o
-run:
-	./$(TARGET)
-
-dev: clean $(TARGET) run
+	rm -f $(TARGETS) $(MPI_TARGETS) *.o
+.PHONY: clean all
