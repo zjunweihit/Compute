@@ -126,8 +126,8 @@ static void show_result(enum copy_dir_type copy,
 		struct timespec *t2,
 		size_t size, int count, bool cache)
 {
-	double start = t1->tv_sec * 1e6 + t1->tv_nsec / 1000;
-	double end = t2->tv_sec * 1e6 + t2->tv_nsec / 1000;
+	double start = t1->tv_sec * 1e9 + t1->tv_nsec;
+	double end = t2->tv_sec * 1e9 + t2->tv_nsec;
 	double rate = size / ((end - start) / count);
 	char *name = NULL;
 
@@ -143,7 +143,7 @@ static void show_result(enum copy_dir_type copy,
 		break;
 	}
 
-	printf("[%s] size: 0x%lx %10s copy rate: %16f MB/s\n",
+	printf("[%s] size: %8lx(Hex) %10s copy rate: %10f GB/s\n",
 			name,
 			size,
 			cache ? "chached" : "uncached",
@@ -273,11 +273,12 @@ static void test_d2d(size_t size, int count, bool cache, bool warmup)
 }
 #endif
 
-#define TEST_SZ_NUM	4
+#define TEST_SZ_NUM	8
 
 int main(int argc, char **argv)
 {
-	int test_size[TEST_SZ_NUM] = {1, 2, 4, 8};
+	//int test_size[TEST_SZ_NUM] = {1, 2, 4, 8};
+	int test_size[TEST_SZ_NUM] = {1, 2, 4, 8, 16, 32, 64, 1024};
 	get_opts(argc, argv);
 
 	hsa_init();
