@@ -157,9 +157,9 @@ static void show_result(enum copy_dir_type copy,
 		break;
 	}
 
-	printf("[%s] size: %8lx(Hex) %10s copy rate: %10f GB/s\n",
+	printf("[%s] size: %8ld KB %10s copy rate: %10f GB/s\n",
 			name,
-			size,
+			size / PAGE_SIZE * 4,
 			cache ? "cached" : "uncached",
 			rate);
 }
@@ -316,7 +316,7 @@ static void test_all_size(enum copy_dir_type copy_t)
 	copy_data(copy_t, PAGE(1), 1, false, true);
 
 	for (int i = 0; i < TEST_SZ_NUM; ++i) {
-		copy_data(copy_t, PAGE(test_size[i]), TEST_CNT, false, false);
+		//copy_data(copy_t, PAGE(test_size[i]), TEST_CNT, false, false);
 		copy_data(copy_t, PAGE(test_size[i]), TEST_CNT, true, false);
 	}
 }

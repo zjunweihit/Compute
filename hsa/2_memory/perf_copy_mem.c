@@ -143,10 +143,10 @@ static void show_result(enum copy_dir_type copy,
 		break;
 	}
 
-	printf("[%s] size: %8lx(Hex) %10s copy rate: %10f GB/s\n",
+	printf("[%s] size: %8ld KB %10s copy rate: %10f GB/s\n",
 			name,
-			size,
-			cache ? "chached" : "uncached",
+			size / PAGE_SIZE * 4,
+			cache ? "cached" : "uncached",
 			rate);
 }
 
@@ -275,33 +275,32 @@ static void test_d2d(size_t size, int count, bool cache, bool warmup)
 
 #define TEST_SZ_NUM	8
 
+static void test_all_size(enum copy_dir_type copy_t)
+{
+	int test_size[TEST_SZ_NUM] = {1, 2, 4, 8, 16, 32, 64,
+		1024 		/* 4MB */
+		//1024 * 4	/* 16MB */
+	};
+
+	// warm up
+	copy_data(copy_t, PAGE(1), 1, false, true);
+
+	for (int i = 0; i < TEST_SZ_NUM; ++i) {
+		//copy_data(copy_t, PAGE(test_size[i]), TEST_CNT, false, false);
+		copy_data(copy_t, PAGE(test_size[i]), TEST_CNT, true, false);
+	}
+}
+
 int main(int argc, char **argv)
 {
-	//int test_size[TEST_SZ_NUM] = {1, 2, 4, 8};
-	int test_size[TEST_SZ_NUM] = {1, 2, 4, 8, 16, 32, 64, 1024};
 	get_opts(argc, argv);
 
 	hsa_init();
-
 	test_init();
 
-	// warm up
-	copy_data(COPY_D2D, PAGE(2), 1, false, true);
-
-	for (int i = 0; i < TEST_SZ_NUM; ++i) {
-		copy_data(COPY_D2D, PAGE(test_size[i]), TEST_CNT, false, false);
-		copy_data(COPY_D2D, PAGE(test_size[i]), TEST_CNT, true, false);
-	}
-
-	// D2H always causes system hang
-	//copy_data(COPY_D2H, PAGE(2), 2000, false, false);
-	//copy_data(COPY_D2H, PAGE(2), TEST_CNT, false, false);
-	//copy_data(COPY_D2H, PAGE(2), TEST_CNT, true, false);
-
-	for (int i = 0; i < TEST_SZ_NUM; ++i) {
-		copy_data(COPY_H2D, PAGE(test_size[i]), TEST_CNT, false, false);
-		copy_data(COPY_H2D, PAGE(test_size[i]), TEST_CNT, true, false);
-	}
+	test_all_size(COPY_D2D);
+	test_all_size(COPY_H2D);
+	test_all_size(COPY_D2H); // uncached copy will cause system hang
 
 	hsa_shut_down();
 
