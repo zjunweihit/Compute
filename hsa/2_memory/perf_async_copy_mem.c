@@ -12,10 +12,56 @@
 
 #include "global.h"
 
-#define PAGE_SIZE	4096
-#define PAGE(n)		((n) * PAGE_SIZE)
+#define KB(n)		((n) << 10)
+#define MB(n)		((n) << 20)
 
 #define TEST_CNT	2000
+#define GROUP_NUM(arr)	(sizeof(arr) / sizeof(size_t))
+
+static size_t group_all_sz[18] = {
+	KB(4),
+	KB(8),
+	KB(16),
+	KB(32),
+	KB(64),
+	KB(128),
+	KB(256),
+	KB(512),
+	MB(1),
+	MB(2),
+	MB(4),
+	MB(8),
+	MB(16),
+	MB(32),
+	MB(64),
+	MB(128),
+	MB(256),
+	MB(512),
+};
+
+static size_t group_small_sz[8] = {
+	KB(4),
+	KB(8),
+	KB(16),
+	KB(32),
+	KB(64),
+	KB(128),
+	KB(256),
+	KB(512),
+};
+
+static size_t group_big_sz[10] = {
+	MB(1),
+	MB(2),
+	MB(4),
+	MB(8),
+	MB(16),
+	MB(32),
+	MB(64),
+	MB(128),
+	MB(256),
+	MB(512),
+};
 
 hsa_region_t sys_region, loc_region;
 hsa_agent_t gpu_agent;
@@ -157,11 +203,19 @@ static void show_result(enum copy_dir_type copy,
 		break;
 	}
 
-	printf("[%s] size: %8ld KB %10s copy rate: %10f GB/s\n",
-			name,
-			size / PAGE_SIZE * 4,
-			cache ? "cached" : "uncached",
-			rate);
+	if (test_mode == TEST_BIG) {
+		printf("[%s] size: %8ld MB %10s copy rate: %10f GB/s\n",
+				name,
+				size >> 20,
+				cache ? "cached" : "uncached",
+				rate);
+	} else {
+		printf("[%s] size: %8ld KB %10s copy rate: %10f GB/s\n",
+				name,
+				size >> 10,
+				cache ? "cached" : "uncached",
+				rate);
+	}
 }
 
 static void test_init(void)
@@ -303,21 +357,21 @@ static void test_d2d(size_t size, int count, bool cache, bool warmup)
 }
 #endif
 
-#define TEST_SZ_NUM	8
-
-static void test_all_size(enum copy_dir_type copy_t)
+static void test_copy(enum copy_dir_type copy_t, size_t *test_size, int num)
 {
-	int test_size[TEST_SZ_NUM] = {1, 2, 4, 8, 16, 32, 64,
-		1024 		/* 4MB */
-		//1024 * 4	/* 16MB */
-	};
+	int count = TEST_CNT;
 
 	// warm up
-	copy_data(copy_t, PAGE(1), 1, false, true);
+	copy_data(copy_t, KB(4), 1, false, true);
 
-	for (int i = 0; i < TEST_SZ_NUM; ++i) {
-		//copy_data(copy_t, PAGE(test_size[i]), TEST_CNT, false, false);
-		copy_data(copy_t, PAGE(test_size[i]), TEST_CNT, true, false);
+	for (int i = 0; i < num; ++i) {
+		if (test_size[i] >= MB(64))
+			count = 2;
+		else if (test_size[i] >= MB(1))
+			count = 20;
+
+		//copy_data(copy_t, test_size[i], count, false, false);
+		copy_data(copy_t, test_size[i], count, true, false);
 	}
 }
 
@@ -328,9 +382,25 @@ int main(int argc, char **argv)
 	hsa_init();
 	test_init();
 
-	test_all_size(COPY_D2D);
-	test_all_size(COPY_H2D);
-	test_all_size(COPY_D2H);
+	switch (test_mode) {
+	case TEST_ALL:
+		test_copy(COPY_D2D, group_all_sz, GROUP_NUM(group_all_sz));
+		test_copy(COPY_H2D, group_all_sz, GROUP_NUM(group_all_sz));
+		test_copy(COPY_D2H, group_all_sz, GROUP_NUM(group_all_sz));
+		break;
+	case TEST_SMALL:
+		test_copy(COPY_D2D, group_small_sz, GROUP_NUM(group_small_sz));
+		test_copy(COPY_H2D, group_small_sz, GROUP_NUM(group_small_sz));
+		test_copy(COPY_D2H, group_small_sz, GROUP_NUM(group_small_sz));
+		break;
+	case TEST_BIG:
+		test_copy(COPY_D2D, group_big_sz, GROUP_NUM(group_big_sz));
+		test_copy(COPY_H2D, group_big_sz, GROUP_NUM(group_big_sz));
+		test_copy(COPY_D2H, group_big_sz, GROUP_NUM(group_big_sz));
+		break;
+	default:
+		break;
+	}
 
 	hsa_shut_down();
 

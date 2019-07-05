@@ -17,5 +17,10 @@ do {									\
 		printf(" => "args);						\
 } while (0)
 
+#define TEST_ALL        0
+#define TEST_SMALL      1
+#define TEST_BIG        2
+
 extern int debug;
+extern int test_mode;
 void get_opts(int argc, char **argv);
