@@ -7,8 +7,8 @@ MPI_TARGETS=$(patsubst %.c, %, $(notdir $(MPI_SRC)))
 C_FLAGS=-g -Wall
 HSA_LIB_PATH=/opt/rocm/lib
 HSA_INC_PATH=/opt/rocm/hsa/include/hsa
-G_INC_PATH=../global
-G_SRC=../global/global.c
+G_INC_PATH=global
+G_SRC=global/global.c
 
 all: $(TARGETS) $(MPI_TARGETS)
 
