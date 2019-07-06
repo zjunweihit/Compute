@@ -340,7 +340,7 @@ static void test_copy(enum copy_dir_type copy_t, size_t *test_size, int num)
 		else if (test_size[i] >= MB(1))
 			count = 20;
 
-		copy_data(copy_t, test_size[i], count, false, false);
+		//copy_data(copy_t, test_size[i], count, false, false);
 		copy_data(copy_t, test_size[i], count, true, false);
 	}
 }
