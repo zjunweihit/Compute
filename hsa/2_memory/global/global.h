@@ -23,4 +23,5 @@ do {									\
 
 extern int debug;
 extern int test_mode;
+extern int test_cpdma;
 void get_opts(int argc, char **argv);

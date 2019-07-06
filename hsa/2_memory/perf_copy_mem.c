@@ -330,18 +330,23 @@ static void test_d2d(size_t size, int count, bool cache, bool warmup)
 static void test_copy(enum copy_dir_type copy_t, size_t *test_size, int num)
 {
 	int count = TEST_CNT;
+	size_t size;
 
 	// warm up
 	copy_data(copy_t, KB(4), 1, false, true);
 
 	for (int i = 0; i < num; ++i) {
-		if (test_size[i] >= MB(64))
+		size = test_size[i];
+		if (size >= MB(64)) {
 			count = 2;
-		else if (test_size[i] >= MB(1))
+			if (test_cpdma)
+				size = MB(64) - 1;
+		} else if (size >= MB(1)) {
 			count = 20;
+		}
 
 		//copy_data(copy_t, test_size[i], count, false, false);
-		copy_data(copy_t, test_size[i], count, true, false);
+		copy_data(copy_t, size, count, true, false);
 	}
 }
 
