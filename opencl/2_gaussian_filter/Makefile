@@ -19,7 +19,6 @@ $(TARGET): $(TARGET).cpp
 	$(CC) $(CCFLAGS) $< -o $@ $(LDFLAGS)
 
 clean:
-	@rm -f *.o $(TARGET)
+	@rm -f *.o $(TARGET) 2.png
 run:
-	./$(TARGET)
-
+	./$(TARGET) 1.png 2.png
