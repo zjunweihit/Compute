@@ -68,9 +68,9 @@ void InitData(void)
         }
     }
 
-    PrintMatrix("A", A, M, P);
-    PrintMatrix("B", B, P, N);
-    PrintMatrix("C", C, M, N);
+    PrintMatrix((char*)"A", A, M, P);
+    PrintMatrix((char*)"B", B, P, N);
+    PrintMatrix((char*)"C", C, M, N);
 }
 
 void Cleanup(cl_context ctx, cl_command_queue cmdq, cl_program prog,
@@ -274,7 +274,7 @@ bool VerifyResult(cl_command_queue cmdq, cl_mem memObj)
         return false;
     }
 
-    PrintMatrix("result", result, M, N);
+    PrintMatrix((char*)"result", result, M, N);
 
     for (int i = 0; i < SZ_C; i++) {
         if (result[i] != C[i])
