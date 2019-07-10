@@ -218,7 +218,7 @@ cl_kernel CreateKernel(cl_program program, cl_mem memObj[3])
     cl_int n = N;
     cl_int p = P;
 
-    kernel = clCreateKernel(program, "matrixMul2", NULL);
+    kernel = clCreateKernel(program, "matrixMul3", NULL);
     if (kernel == NULL) {
         std::cerr << "Failed to create a kernel\n";
         return NULL;
@@ -271,10 +271,11 @@ bool EnqueueKernel(cl_command_queue cmdq, cl_kernel kernel, int test_cnt)
         clFinish(cmdq);
     }
     clock_gettime(CLOCK_MONOTONIC_RAW, &t2);
+
     if (errRet != CL_SUCCESS)
         return false;
 
-    show_result((char*)"[GPU] row per work-iterm, 4 workgroups", &t1, &t2, test_cnt);
+    show_result((char*)"[GPU] row per work-iterm, 4 wg, private A", &t1, &t2, test_cnt);
 
     return true;
 }
@@ -338,7 +339,7 @@ int main()
     }
 
     // [4] create a program
-    program = CreateProgram(ctx, dev, "matrixMul2.cl");
+    program = CreateProgram(ctx, dev, "matrixMul3.cl");
     if (program == NULL) {
         std::cerr << "Failed to create a program!\n";
         goto err;

@@ -1,7 +1,7 @@
 //
 // A[M x P]  B[P x N]  C[M x N]
 //   i   k     k   j     i   j
-__kernel void matrixMul2(
+__kernel void matrixMul3(
         const int M,
         const int P,
         const int N,
@@ -11,15 +11,19 @@ __kernel void matrixMul2(
 {
     int k, j;
     int i = get_global_id(0);
+    float ALoc[1000]; // same as A
     float tmp;
 
     if (i >= M)
         return;
 
+    for (k = 0; k < P; ++k)
+        ALoc[k] = A[i * P + k];
+
     for (j = 0; j < N; ++j) {
         tmp = 0.0f;
         for (k = 0; k < P; ++k)
-            tmp +=  A[i * P + k] * B[k * N + j];
+            tmp +=  ALoc[k] * B[k * N + j];
         C[i * N + j] = tmp;
     }
 }

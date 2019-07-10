@@ -17,8 +17,7 @@ __kernel void matrixMul(
     if (i >= M || j >= N)
         return;
 
-    for (k = 0; k < P; ++k) {
+    for (k = 0; k < P; ++k)
         tmp += A[i * P + k] * B[k * N + j];
-    }
     C[i * N + j] = tmp;
 }

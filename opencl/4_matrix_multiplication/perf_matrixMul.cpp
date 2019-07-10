@@ -20,6 +20,10 @@
 #define SZ_B        (P * N)
 #define SZ_C        (M * N)
 
+// if test_cnt > 1, it cannot calculate C(i,j), since it will accumulate all resutls together
+// the result is C(i,j) * test_cnt actually, rather than C(i,j), so test row per work-item
+#define TEST_CNT    10
+
 float A[ M * P ];
 float B[ P * N ];
 float C[ M * N ] = { 0.0f };
@@ -61,9 +65,9 @@ void InitData(void)
     }
 
 #ifdef _DEBUG
-    PrintMatrix("A", A, M, P);
-    PrintMatrix("B", B, P, N);
-    PrintMatrix("C", C, M, N);
+    PrintMatrix((char*)"A", A, M, P);
+    PrintMatrix((char*)"B", B, P, N);
+    PrintMatrix((char*)"C", C, M, N);
 #endif
 }
 
@@ -236,21 +240,43 @@ cl_kernel CreateKernel(cl_program program, cl_mem memObj[3])
     return kernel;
 }
 
-bool EnqueueKernel(cl_command_queue cmdq, cl_kernel kernel)
+void show_result(char *name,
+                 struct timespec *t1,
+                 struct timespec *t2,
+                 int test_cnt)
+{
+    double start = t1->tv_sec * 1e9 + t1->tv_nsec;
+    double end = t2->tv_sec * 1e9 + t2->tv_nsec;
+    double gflops = (M * P * N) / ((end - start) / test_cnt);
+
+    printf("%s: %10f GFLOPS\n", name, gflops);
+}
+
+bool EnqueueKernel(cl_command_queue cmdq, cl_kernel kernel, int test_cnt)
 {
     size_t globalWorkSize[2] = { M, N };
     cl_int errRet;
+    struct timespec t1, t2;
+    int i;
 
-    errRet = clEnqueueNDRangeKernel(cmdq, kernel,
-                                    2,      // work-dim
-                                    NULL,   // global work offset
-                                    globalWorkSize,
-                                    NULL,   // localWorkSize
-                                    0,      // num of events in wait list
-                                    NULL,   // event wait list
-                                    NULL);  // event
+    clock_gettime(CLOCK_MONOTONIC_RAW, &t1);
+    for (i = 0; i < test_cnt; ++i) {
+        errRet = clEnqueueNDRangeKernel(cmdq, kernel,
+                                        2,      // work-dim
+                                        NULL,   // global work offset
+                                        globalWorkSize,
+                                        NULL,   // localWorkSize
+                                        0,      // num of events in wait list
+                                        NULL,   // event wait list
+                                        NULL);  // event
+        clFinish(cmdq);
+    }
+    clock_gettime(CLOCK_MONOTONIC_RAW, &t2);
+
     if (errRet != CL_SUCCESS)
         return false;
+
+    show_result((char*)"[GPU] row per work-iterm, no workgroup", &t1, &t2, test_cnt);
 
     return true;
 }
@@ -269,7 +295,7 @@ bool VerifyResult(cl_command_queue cmdq, cl_mem memObj)
     }
 
 #ifdef _DEBUG
-    PrintMatrix("result", result, M, N);
+    PrintMatrix((char*)"result", result, M, N);
 #endif
 
     for (int i = 0; i < SZ_C; i++) {
@@ -328,7 +354,7 @@ int main()
     }
 
     // [6] enqueue the kernel for execution
-    if (!EnqueueKernel(cmdq, kernel)) {
+    if (!EnqueueKernel(cmdq, kernel, TEST_CNT)) {
         std::cerr << "Failed to enqueue a kernel!\n";
         goto err;
     }

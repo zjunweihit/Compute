@@ -218,7 +218,7 @@ cl_kernel CreateKernel(cl_program program, cl_mem memObj[3])
     cl_int n = N;
     cl_int p = P;
 
-    kernel = clCreateKernel(program, "matrixMul2", NULL);
+    kernel = clCreateKernel(program, "matrixMul4", NULL);
     if (kernel == NULL) {
         std::cerr << "Failed to create a kernel\n";
         return NULL;
@@ -230,6 +230,7 @@ cl_kernel CreateKernel(cl_program program, cl_mem memObj[3])
     errRet |= clSetKernelArg(kernel, 3, sizeof(cl_mem), &memObj[0]);
     errRet |= clSetKernelArg(kernel, 4, sizeof(cl_mem), &memObj[1]);
     errRet |= clSetKernelArg(kernel, 5, sizeof(cl_mem), &memObj[2]);
+    errRet |= clSetKernelArg(kernel, 6, sizeof(float) * p, NULL);
     if (errRet != CL_SUCCESS) {
         std::cerr << "Failed to set kernel arguments\n";
         return NULL;
@@ -271,10 +272,11 @@ bool EnqueueKernel(cl_command_queue cmdq, cl_kernel kernel, int test_cnt)
         clFinish(cmdq);
     }
     clock_gettime(CLOCK_MONOTONIC_RAW, &t2);
+
     if (errRet != CL_SUCCESS)
         return false;
 
-    show_result((char*)"[GPU] row per work-iterm, 4 workgroups", &t1, &t2, test_cnt);
+    show_result((char*)"[GPU] row per work-item, 4 wg, private A, local B", &t1, &t2, test_cnt);
 
     return true;
 }
@@ -338,7 +340,7 @@ int main()
     }
 
     // [4] create a program
-    program = CreateProgram(ctx, dev, "matrixMul2.cl");
+    program = CreateProgram(ctx, dev, "matrixMul4.cl");
     if (program == NULL) {
         std::cerr << "Failed to create a program!\n";
         goto err;
