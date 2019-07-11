@@ -11,7 +11,7 @@
 #define THREAD_PER_BLOCK_Y  4
 
 // it must be void
-__global__ void matrixAdd(hipLaunchParm lp, float *out, float *in, unsigned int width)
+__global__ void matrixAdd(float *out, float *in, unsigned int width)
 {
     int x = hipBlockIdx_x * hipBlockDim_x + hipThreadIdx_x;
     int y = hipBlockIdx_y * hipBlockDim_y + hipThreadIdx_y;
@@ -49,7 +49,7 @@ int main()
 
     hipMemcpy(A_d, (const void*)A_h, NUM * sizeof(float), hipMemcpyHostToDevice);
 
-    hipLaunchKernel(matrixAdd,
+    hipLaunchKernelGGL(matrixAdd,
                     dim3(WIDTH / THREAD_PER_BLOCK_X, WIDTH / THREAD_PER_BLOCK_Y),
                     dim3(THREAD_PER_BLOCK_X, THREAD_PER_BLOCK_Y),
                     0, // dynamic shared
