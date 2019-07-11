@@ -20,10 +20,8 @@ float A_h[ M * P ];
 float B_h[ P * N ];
 float C_h[ M * N ] = { 0.0f };
 
-#define THREAD_PER_BLOCK_X  16
-#define THREAD_PER_BLOCK_Y  16
-
-//#define _DEBUG
+#define THREAD_PER_BLOCK_X  8
+#define THREAD_PER_BLOCK_Y  8
 
 #ifdef _DEBUG
 void PrintMatrix(char *name, float *mat, int row, int col)
@@ -152,7 +150,7 @@ int main()
     // warm up
     hipLaunchKernelGGL(matrixMul,
                     dim3(M, N),
-                    dim3(1,1),//NULL,//dim3(1, 1),
+                    dim3(1,1),
                     0, // dynamic shared
                     0, // stream
                     M, P, N,
@@ -161,7 +159,7 @@ int main()
     clock_gettime(CLOCK_MONOTONIC_RAW, &t1);
     for (i = 0; i < test_cnt; ++i) {
         hipLaunchKernelGGL(matrixMul,
-                        dim3(M / THREAD_PER_BLOCK_X, N / THREAD_PER_BLOCK_Y),
+                        dim3(M , N),
                         dim3(THREAD_PER_BLOCK_X, THREAD_PER_BLOCK_Y),
                         0, // dynamic shared
                         0, // stream
