@@ -1,7 +1,9 @@
-const sampler_t sampler = CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
-
 /*
+ * g(i,j)=0.30R(i,j)+0.59G(i,j)+0.11B(i,j)
+ * read_imagef() gets pixel as (x, y, z) = (B, G, R)
  */
+
+const sampler_t sampler = CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
 
 __kernel void gray(__read_only image2d_t src, __write_only image2d_t dst)
 {

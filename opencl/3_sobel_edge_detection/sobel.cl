@@ -1,5 +1,3 @@
-const sampler_t sampler = CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
-
 /*
  *  3 x 3 kernel to convolve with original image to compute derivatives.
  *
@@ -15,6 +13,8 @@ const sampler_t sampler = CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
  *   p = [ p10  p11  p12 ]
  *       [ p20  p21  p22 ]
  */
+
+const sampler_t sampler = CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
 
 __kernel void sobel(__read_only image2d_t src, __write_only image2d_t dst)
 {
