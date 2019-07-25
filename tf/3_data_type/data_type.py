@@ -12,16 +12,24 @@ ss = tf.Session()
 # D3        tf.constant([ [[1], [2], [3]], [[4], [5], [6]] ], tf.int16)
 
 c_d1 = tf.constant(1, tf.int16)
+# shape (3,) only 3 elements in a row 1x3, like a list
+# output:
+#   Tensor("Const_1:0", shape=(3,), dtype=int16)
+#   [1 2 3]
+c_d1_2 = tf.constant([1, 2, 3], tf.int16)
 c_d2 = tf.constant([ [1, 2], [3, 4] ], tf.int16)
 c_d3 = tf.constant([ [[1], [2], [3]], [[4], [5], [6]] ], tf.int16)
 
 r1 = ss.run(c_d1)
+r1_2 = ss.run(c_d1_2)
 r2 = ss.run(c_d2)
 r3 = ss.run(c_d3)
 
 print("================ Constant ================")
 print(c_d1)
 print(r1)
+print(c_d1_2)
+print(r1_2)
 print(c_d2)
 print(r2)
 print(c_d3)
