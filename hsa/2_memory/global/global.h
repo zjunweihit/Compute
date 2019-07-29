@@ -21,6 +21,9 @@ do {									\
 #define TEST_SMALL      1
 #define TEST_BIG        2
 
+#define KB(n)		((n) << 10)
+#define MB(n)		((n) << 20)
+
 extern int debug;
 extern int test_mode;
 extern int test_cpdma;

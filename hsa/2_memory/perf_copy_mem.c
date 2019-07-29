@@ -12,9 +12,6 @@
 
 #include "global.h"
 
-#define KB(n)		((n) << 10)
-#define MB(n)		((n) << 20)
-
 #define TEST_CNT	2000
 #define GROUP_NUM(arr)	(sizeof(arr) / sizeof(size_t))
 
