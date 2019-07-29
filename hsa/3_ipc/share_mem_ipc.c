@@ -156,7 +156,7 @@ void import_memory(int fd)
 	check([import] initialize HSA, status);
 
 	read(fd, &handle, sizeof(handle));
-	printf("handle[0] %u\n", handle.handle[0]);
+	printf("handle[0] 0x%x\n", handle.handle[0]);
 
 	status = get_agent(1, &agent); // we can use another gpu 2 for p2p
 	check([import] get agent, status);
