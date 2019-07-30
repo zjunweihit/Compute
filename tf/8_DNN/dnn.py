@@ -32,13 +32,34 @@ from tensorflow.examples.tutorials.mnist import input_data
 #   dtype is uint8
 #   use 0, 1 to indicate the number
 #       [ 0. 0. 0. 0. 0. 0. 0. 1. 0. 0.] is label '7'
-#mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+#   (55000, 10)
+#
+#   [[0. 0. 0. ... 1. 0. 0.]
+#  [0. 0. 0. ... 0. 0. 0.]
+#  [0. 0. 0. ... 0. 0. 0.]
+#  ...
+#  [0. 0. 0. ... 0. 0. 0.]
+#  [0. 0. 0. ... 0. 0. 0.]
+#  [0. 0. 0. ... 0. 1. 0.]]
+#
+# (55000, )
+#
+# [7 3 4 ... 5 6 8]
+#
+#
+#mnist_onehot = input_data.read_data_sets("MNIST_data/", one_hot=True)
 mnist = input_data.read_data_sets("MNIST_data/")
 
 #print(mnist)
 
-def input(dataset):
-    return dataset.images, dataset.labels.astype(np.int32)
+def get_input_fn(dataset, n_epochs, b_size, shuffle):
+    return tf.estimator.inputs.numpy_input_fn(
+        x={"x": dataset.images},
+        y=dataset.labels.astype(np.int32),
+        num_epochs=n_epochs,
+        batch_size=b_size,
+        shuffle=shuffle
+    )
 
 feature_columns = [tf.feature_column.numeric_column("x", shape=[28, 28])]
 classifier = tf.estimator.DNNClassifier(
@@ -50,20 +71,14 @@ classifier = tf.estimator.DNNClassifier(
     model_dir="output"
 )
 
-train_input_fn = tf.estimator.inputs.numpy_input_fn(
-    x={"x": input(mnist.train)[0]},
-    y=input(mnist.train)[1],
-    num_epochs=None,
-    batch_size=50,
-    shuffle=True
-)
-classifier.train(input_fn=train_input_fn, steps=10000)
+classifier.train(input_fn=get_input_fn(mnist.train,
+                                       None,
+                                       128,
+                                       True),
+                 steps=20000)
 
-test_input_fn = tf.estimator.inputs.numpy_input_fn(
-    x={"x": input(mnist.test)[0]},
-    y=input(mnist.test)[1],
-    num_epochs=1,
-    shuffle=False
-)
-
-accuracy = classifier.evaluate(input_fn=test_input_fn)["accuracy"]
+accuracy = classifier.evaluate(input_fn=get_input_fn(mnist.test,
+                                                     1,
+                                                     128,
+                                                     False),
+                               steps=1000)["accuracy"]
