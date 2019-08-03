@@ -26,13 +26,16 @@ input_shape = (img_rows, img_cols, 1)
 
 x_train = x_train.astype('float32')
 x_test = x_test.astype('float32')
+
+# scale values to a range of 0 to 1 by dividing 255
 x_train /= 255.0
 x_test /= 255.0
 print('x_train shape:', x_train.shape)
 print(x_train.shape[0], 'train samples')
 print(x_test.shape[0], 'test samples')
 
-# convert class vectors to binary class matrices(one hot)
+# convert class vectors to binary class matrices
+# to become one hot data for labels
 y_train = keras.utils.to_categorical(y_train, num_classes)
 y_test = keras.utils.to_categorical(y_test, num_classes)
 
