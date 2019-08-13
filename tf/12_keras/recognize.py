@@ -39,6 +39,8 @@ def findDigit(roi, thresValue):
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required=True,
                   help="path to the image with handwriting numbers")
+ap.add_argument("-d", "--direction", required=False, default="h",
+                  help="show the comparison images 'h'orizontally or 'v'ertically")
 args = vars(ap.parse_args())
 
 print("Loading pre-trained model ...")
@@ -57,7 +59,12 @@ for r in rois:
     cv2.putText(frame, str(digit), (x,y), cv2.FONT_HERSHEY_SIMPLEX, 1, (127,0,255), 2)
 
 newEdges = cv2.cvtColor(edges, cv2.COLOR_GRAY2BGR)
-newFrame = np.hstack((frame,newEdges))
+
+if args["direction"] == "v":
+    newFrame = np.vstack((frame,newEdges))
+else:
+    newFrame = np.hstack((frame,newEdges))
+
 cv2.imshow('frame', newFrame)
 cv2.imshow('digits(28 x 28)', digits)
 key = cv2.waitKey(0) & 0xff
