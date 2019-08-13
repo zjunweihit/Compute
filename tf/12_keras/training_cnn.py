@@ -4,6 +4,8 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 
+import pickle
+
 batch_size = 128
 num_classes = 10
 epochs = 12
@@ -60,5 +62,11 @@ score = model.evaluate(x_test, y_test, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
 
-print("saving model ...")
+print("saving keras model ...")
 model.save("keras_cnn.model")
+
+print("saving pickle model...")
+f = open('keras_cnn.pickle', "wb")
+f.write(pickle.dumps(model))
+f.close()
+

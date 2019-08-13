@@ -3,6 +3,7 @@ from keras.models import load_model
 from keras.datasets import mnist
 import matplotlib.pyplot as plt
 import numpy as np
+import pickle
 
 img_rows, img_cols = 28, 28
 
@@ -19,6 +20,8 @@ y_test = to_categorical(y_test, 10)
 
 print("Loading pre-trained model ...")
 model = load_model("keras_cnn.model")
+#
+#model = pickle.loads(open("keras_cnn.pickle", "rb").read())
 
 # prediction and show the images
 test_total = 9
