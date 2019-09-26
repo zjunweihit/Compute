@@ -5,6 +5,8 @@
 #include <iostream>
 #include "hipblas.h"
 #include <unistd.h>
+#include <ctime>
+#include <ctime>
 
 using namespace std;
 
@@ -59,7 +61,8 @@ void mat_mat_mult(T alpha, T beta, int M, int N, int K, T* A, int As1, int As2,
 
 // global setting
 static int g_M, g_N, g_K;
-static bool g_print;
+static bool g_print = false;
+static bool g_true_rand = false;
 
 static void set_def_opt()
 {
@@ -69,10 +72,22 @@ static void set_def_opt()
     g_print = true;
 }
 
-static void parse_opt(int argc, char **argv)
+static void show_help(void)
+{
+    std::cout << "  - p: to print the matrix data" << std::endl;
+    std::cout << "  - s: set the matrix size m=n=k=<input size>" << std::endl;
+    std::cout << "  - r: initialize true Random data" << std::endl;
+    std::cout << "  - h: this help info" << std::endl;
+}
+
+static int parse_opt(int argc, char **argv)
 {
     int opt;
-    const char *optstr = "ps:";
+    const char *optstr = "hps:r";
+    size_t size = 0;
+
+    if (argc <= 1)
+        set_def_opt();
 
     while (( opt = getopt(argc, argv, optstr)) != -1) {
         switch (opt) {
@@ -80,13 +95,21 @@ static void parse_opt(int argc, char **argv)
             g_print = true;
             break;
         case 's':
-            size_t size = atoi(optarg);
+            size = atoi(optarg);
             g_M = size;
             g_N = size;
             g_K = size;
             break;
+        case 'r':
+            g_true_rand = true;
+            break;
+        case 'h':
+        default:
+            show_help();
+            return -1;
         }
     }
+    return 0;
 }
 
 void print_matrix(const char *matrix_name, double *matrix, int row, int col)
@@ -94,6 +117,8 @@ void print_matrix(const char *matrix_name, double *matrix, int row, int col)
     if (!g_print)
         return;
 
+    std::string del(80, '=');
+    cout << del << endl;
     cout << matrix_name << ":\n";
     for (int i = 0; i < row; i++) {
         for (int j = 0; j < col; j++)
@@ -104,10 +129,9 @@ void print_matrix(const char *matrix_name, double *matrix, int row, int col)
 
 int main(int argc, char **argv)
 {
-    if (argc > 1)
-        parse_opt(argc, argv);
-    else
-        set_def_opt();
+    int ret = 0;
+    if (parse_opt(argc, argv))
+        exit(-1);
 
     hipblasOperation_t transa = HIPBLAS_OP_T, transb = HIPBLAS_OP_T;
     double alpha = 1.0, beta = 0.0;
@@ -150,9 +174,11 @@ int main(int argc, char **argv)
     vector<double> hc(nc);
     vector<double> hc_res(nc);
 
+    srand(g_true_rand ? (unsigned)time(NULL) : 217);
+
     if (argc > 1) {
-        for( int i = 0; i < na; ++i ) { ha[i] = 1.1; }
-        for( int i = 0; i < nb; ++i ) { hb[i] = 2.0; }
+        for( int i = 0; i < na; ++i ) { ha[i] = rand(); }
+        for( int i = 0; i < nb; ++i ) { hb[i] = rand(); }
     } else {
         for( int i = 0; i < na; ++i ) { ha[i] = i; }
         for( int i = 0; i < nb; ++i ) { hb[i] = 6 - i; }
