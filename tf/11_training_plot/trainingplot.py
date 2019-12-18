@@ -58,7 +58,7 @@ x, y_acc, y_loss = [], [], []
 
 def get_epoch_data(epoch, logs):
     x.append(epoch + 1) # epoch starts from 0
-    y_acc.append(logs.get('acc'))
+    y_acc.append(logs.get('accuracy'))
     y_loss.append(logs.get('loss'))
 
     ax = axes[0]
